@@ -32,9 +32,9 @@ const ShopPage = ({ onProductClick, onBookAppointment }) => {
   const renderProductGrid = (products) => (
     <div className="shop-grid">
       {products.map((prod) => (
-        <div 
+        <div
           key={prod.id}
-          className="product-card" 
+          className="product-card"
           onClick={() => handleProductClick(prod)}
         >
           <div className="product-image-container">
@@ -55,9 +55,9 @@ const ShopPage = ({ onProductClick, onBookAppointment }) => {
 
   return (
     <div className="shop-page" style={{ padding: '20px', paddingTop: '10px' }}>
-      
+
       {/* Botón Especial de Citas */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="booking-special-banner"
@@ -75,14 +75,14 @@ const ShopPage = ({ onProductClick, onBookAppointment }) => {
 
       {/* Categoría: Tatuajes */}
       <div className="section-header" style={{ marginTop: '25px' }}>
-        <h2 className="section-title">Para Tatuajes</h2>
+        <h2 className="section-title">Tatuajes</h2>
         <div className="section-divider"></div>
       </div>
       {renderProductGrid(tattooProducts)}
 
       {/* Categoría: Piercings */}
       <div className="section-header">
-        <h2 className="section-title">Para Piercings</h2>
+        <h2 className="section-title">Piercings</h2>
         <div className="section-divider"></div>
       </div>
       {renderProductGrid(piercingProducts)}

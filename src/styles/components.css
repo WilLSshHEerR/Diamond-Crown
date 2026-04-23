@@ -567,3 +567,27 @@
 .primary-btn.full-width-btn:active {
   transform: scale(0.98);
 }
+
+/* Responsive adjustments for shorter/smaller screens (e.g. Samsung FE devices) */
+@media screen and (max-height: 850px),
+screen and (max-width: 400px) {
+  .header-container {
+    height: 75px;
+  }
+
+  .header-logo {
+    height: 60px;
+  }
+
+  .fixed-search-wrapper {
+    top: calc(110px + env(safe-area-inset-top));
+  }
+
+  .content-scroll {
+    padding-top: calc(140px + env(safe-area-inset-top));
+  }
+
+  .carousel-container {
+    height: 190px;
+  }
+}
