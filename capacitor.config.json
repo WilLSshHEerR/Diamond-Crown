@@ -1,5 +1,14 @@
 {
   "appId": "com.diamondcrown.app",
   "appName": "Diamond Crown",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["google.com"]
+    }
+  },
+  "server": {
+    "hostname": "localhost"
+  }
 }

@@ -53,6 +53,8 @@
   position: relative;
   flex: 1;
   transition: all 0.3s ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .main-nav-item {
@@ -87,7 +89,7 @@
 }
 
 .nav-item.active .nav-label {
-  color: var(--primary);
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -131,7 +133,8 @@
   height: 100px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 0 15px;
   background: rgba(255, 255, 255, 0.05);
   /* High transparency glass effect */
   backdrop-filter: blur(20px);
@@ -177,7 +180,6 @@
 
 .search-input::placeholder {
   color: var(--muted);
-  opacity: 0.7;
 }
 
 /* Carousel */
@@ -381,7 +383,7 @@
 
 .product-price {
   font-size: 12px;
-  color: var(--primary);
+  color: #ffffff;
   font-weight: 700;
   margin: 0;
 }
@@ -492,7 +494,7 @@
 
 .product-detail-price {
   font-size: 22px;
-  color: var(--primary);
+  color: #ffffff;
   font-weight: 800;
   margin: 0;
 }
@@ -590,4 +592,184 @@ screen and (max-width: 400px) {
   .carousel-container {
     height: 190px;
   }
+}
+
+/* Profile Page */
+.profile-page {
+  padding: 20px;
+  padding-bottom: 100px;
+  color: #ffffff;
+}
+
+.profile-header {
+  padding: 30px 20px;
+  text-align: center;
+  margin-bottom: 25px;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+.profile-avatar-wrapper {
+  margin-bottom: 15px;
+  position: relative;
+  display: inline-block;
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 25px rgba(136, 29, 29, 0.3);
+}
+
+.edit-avatar-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: white;
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-name {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.profile-membership {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.profile-stats {
+  display: flex;
+  justify-content: space-around;
+  marginTop: 20px;
+}
+
+.stat-item p:first-child {
+  font-weight: bold;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+.stat-item p:last-child {
+  font-size: 12px;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  padding: 18px;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-icon-wrapper {
+  background: rgba(136, 29, 29, 0.1);
+  padding: 10px;
+  borderRadius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+}
+
+.logout-btn {
+  width: 100%;
+  marginTop: 20px;
+  padding: 18px;
+  border-radius: 16px;
+  background: rgba(255, 0, 0, 0.05);
+  border: 1px solid rgba(255, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #ff4d4d;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:active {
+  background: rgba(255, 0, 0, 0.1);
+  transform: scale(0.98);
+}
+
+/* Form Styles */
+.form-input {
+  width: 100%;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  color: white;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  border-color: var(--primary);
+  background: rgba(136, 29, 29, 0.05);
+  box-shadow: 0 0 15px rgba(136, 29, 29, 0.2);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Custom Date Picker Styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-clear-button {
+  display: none;
 }

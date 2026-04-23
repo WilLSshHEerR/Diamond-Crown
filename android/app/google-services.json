@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "505923803926",
+    "project_id": "diamond-crown-6a743",
+    "storage_bucket": "diamond-crown-6a743.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:505923803926:android:4ea9981632801a6cbf0e37",
+        "android_client_info": {
+          "package_name": "com.diamondcrown.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "505923803926-hbh3pmh7tbrh06drt49e6i854ju7uhef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.diamondcrown.app",
+            "certificate_hash": "22034af08857757ce77b135dac63c6e60e3a0df3"
+          }
+        },
+        {
+          "client_id": "505923803926-fmd6ns63vf4cn1mdum33b123448dm5j8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUqcZ40qGwoh_TlCKiT2ch2jVH8oUfQ0A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "505923803926-fmd6ns63vf4cn1mdum33b123448dm5j8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

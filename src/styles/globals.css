@@ -9,7 +9,7 @@
   --secondary: #1a1a1a;
   --accent: #8b0000;
   /* Dark Red */
-  --muted: #888888;
+  --muted: #ffffff;
   --font-serif: 'Cinzel', serif;
   --font-sans: 'Inter', sans-serif;
   --gradient: linear-gradient(135deg, #000000 0%, #8b0000 100%);
@@ -52,6 +52,8 @@ button {
   border: none;
   background: none;
   font-family: inherit;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 a {
