@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Home as HomeIcon, ShoppingCart, User } from 'lucide-react';
 import HomePage from './pages/Home';
-import GalleryPage from './pages/Gallery';
-import BookingPage from './pages/Booking';
-import ArtistsPage from './pages/Artists';
-import Header from './components/Header';
+import ShopPage from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
+import Header from './components/Header';
+import BookingPage from './pages/Booking';
 
 function App() {
   const [activeTab, setActiveTab] = useState('home');
@@ -21,7 +20,8 @@ function App() {
     switch (activeTab) {
       case 'home': return <HomePage onProductClick={handleProductSelect} />;
       case 'product-detail': return <ProductDetail product={selectedProduct} onBack={() => setActiveTab('home')} />;
-      case 'shop': return <div style={{ padding: '20px' }}><h2>Tienda</h2><p>Próximamente...</p></div>;
+      case 'shop': return <ShopPage onProductClick={handleProductSelect} onBookAppointment={() => setActiveTab('booking')} />;
+      case 'booking': return <BookingPage onBack={() => setActiveTab('home')} />;
       case 'profile': return <div style={{ padding: '20px' }}><h2>Perfil</h2><p>Configuración de usuario</p></div>;
       default: return <HomePage onProductClick={handleProductSelect} />;
     }

@@ -12,7 +12,7 @@
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-top: calc(110px + env(safe-area-inset-top));
+  padding-top: calc(130px + env(safe-area-inset-top));
   /* Ajuste para acercar el carrusel al buscador fijo */
   padding-bottom: 20px;
 }
@@ -38,7 +38,8 @@
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  z-index: 10002; /* Updated to be above product-detail-page (10001) */
+  z-index: 10002;
+  /* Updated to be above product-detail-page (10001) */
   padding: 0 10px;
   padding-bottom: env(safe-area-inset-bottom);
   flex-shrink: 0;
@@ -189,7 +190,7 @@
 
 .carousel-container {
   width: 90%;
-  height: 250px;
+  height: 230px;
   position: relative;
   overflow: hidden;
   border-radius: 20px;
@@ -231,17 +232,113 @@
   box-shadow: 0 0 10px var(--primary);
 }
 
-/* Product Grid */
-.products-grid {
+/* Section Titles */
+.section-header {
+  width: 90%;
+  margin-top: 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.section-title {
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.section-divider {
+  width: 50px;
+  height: 3px;
+  background: var(--primary);
+  border-radius: 2px;
+}
+
+/* Shop Page */
+.shop-page {
+  padding-bottom: 60px;
+}
+
+.shop-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+  width: 100%;
+  margin-top: 20px;
+  padding-bottom: 20px;
+}
+
+.booking-special-banner {
+  background: linear-gradient(135deg, var(--primary) 0%, #8b2222 100%);
+  border-radius: 20px;
+  padding: 2px;
+  /* For border gradient effect */
+  width: 80%;
+  margin: 0 auto 30px auto;
+  /* Centrado horizontalmente y con margen inferior */
+  box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+  cursor: pointer;
+}
+
+.booking-special-banner .banner-content {
+  background: rgba(10, 10, 10, 0.95);
+  border-radius: 18px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.booking-special-banner h3 {
+  color: var(--primary);
+  font-size: 18px;
+  margin: 0 0 10px 0;
+}
+
+.booking-special-banner p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 0 0 15px 0;
+}
+
+.booking-special-banner .primary-btn {
+  background: var(--primary);
+  color: black;
+  font-weight: 700;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Product Carousel */
+.products-carousel {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
   width: 90%;
-  margin-top: 30px;
+  margin-top: 20px;
   padding-bottom: 40px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  /* Ocultar scrollbar */
+  scrollbar-width: none;
+}
+
+.products-carousel::-webkit-scrollbar {
+  display: none;
 }
 
 .product-card {
+  flex: 0 0 calc(50% - 7.5px);
+  /* Mostrar 2 tarjetas a la vez (50% menos la mitad del gap) */
+  scroll-snap-align: start;
   background: var(--gradient);
   /* Use the same red-black gradient */
   border-radius: 20px;
@@ -316,7 +413,8 @@
   left: 0;
   right: 0;
   min-height: 100vh;
-  background: var(--gradient); /* Cambiado al degradado */
+  background: var(--gradient);
+  /* Cambiado al degradado */
   z-index: 10001;
   /* Above header and bottom nav */
   display: flex;
@@ -359,7 +457,8 @@
   left: 0;
   right: 0;
   height: 150px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%); /* Ajustado para fundirse con el degradado oscuro */
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  /* Ajustado para fundirse con el degradado oscuro */
 }
 
 .product-detail-content {
@@ -370,10 +469,12 @@
   margin-top: -30px;
   position: relative;
   z-index: 2;
-  background: var(--gradient); /* Cambiado al degradado */
+  background: var(--gradient);
+  /* Cambiado al degradado */
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
-  box-shadow: 0 -10px 20px rgba(0,0,0,0.3); /* Sombra para que se note la curva sobre la imagen */
+  box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.3);
+  /* Sombra para que se note la curva sobre la imagen */
 }
 
 .product-header-info {

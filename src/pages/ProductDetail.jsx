@@ -1,9 +1,22 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ShoppingCart, Star } from 'lucide-react';
 
 const ProductDetail = ({ product, onBack }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!product || !product.images || product.images.length <= 1) return;
+    
+    const timer = setInterval(() => {
+      setCurrentIndex((prevIndex) => (prevIndex + 1) % product.images.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [product]);
+
   if (!product) return null;
+
+  const imagesToDisplay = product.images || [product.image];
 
   return (
     <div className="product-detail-page">
@@ -12,15 +25,34 @@ const ProductDetail = ({ product, onBack }) => {
         <ArrowLeft size={24} />
       </button>
 
-      {/* Contenedor de la Imagen */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="product-detail-image-container"
-      >
-        <img src={product.image} alt={product.title} className="product-detail-img" />
+      {/* Contenedor de la Imagen (Carrusel) */}
+      <div className="product-detail-image-container">
+        <AnimatePresence>
+          <motion.img
+            key={currentIndex}
+            src={imagesToDisplay[currentIndex]}
+            alt={`${product.title} ${currentIndex + 1}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "linear" }}
+            className="product-detail-img"
+          />
+        </AnimatePresence>
+        
+        {imagesToDisplay.length > 1 && (
+          <div className="carousel-dots" style={{ bottom: '40px' }}>
+            {imagesToDisplay.map((_, index) => (
+              <div 
+                key={index} 
+                className={`dot ${index === currentIndex ? 'active' : ''}`}
+                style={{ background: index === currentIndex ? 'var(--primary)' : 'rgba(255, 255, 255, 0.5)' }}
+              />
+            ))}
+          </div>
+        )}
         <div className="image-overlay-gradient"></div>
-      </motion.div>
+      </div>
 
       {/* Contenido (Detalles) */}
       <motion.div 
