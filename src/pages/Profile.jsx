@@ -15,12 +15,42 @@ import {
   CheckCircle
 } from 'lucide-react';
 
-import { auth } from '../firebase/config';
+import { auth, db } from '../firebase/config';
 import { signOut } from 'firebase/auth';
+import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 
 const ProfilePage = () => {
   const [activeSection, setActiveSection] = useState(null);
+  const [myBookings, setMyBookings] = useState([]);
+  const [loading, setLoading] = useState(false);
   const user = auth.currentUser;
+
+  useEffect(() => {
+    if (user) {
+      const fetchMyBookings = async () => {
+        setLoading(true);
+        try {
+          const q = query(
+            collection(db, 'bookings'),
+            where('userId', '==', user.uid),
+            orderBy('createdAt', 'desc')
+          );
+          const querySnapshot = await getDocs(q);
+          const bookings = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setMyBookings(bookings);
+        } catch (error) {
+          console.error("Error fetching my bookings:", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchMyBookings();
+    }
+  }, [user]);
+
 
   const handleLogout = async () => {
     try {
@@ -46,30 +76,39 @@ const ProfilePage = () => {
               <h2 style={{ margin: 0, fontSize: '20px', color: 'white' }}>Mis Citas</h2>
             </div>
             
-            {[1, 2].map((item) => (
-              <div key={item} className="glass-card" style={{ padding: '20px', borderRadius: '20px', marginBottom: '15px' }}>
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '40px' }}>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} style={{ width: '30px', height: '30px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%', margin: '0 auto' }} />
+              </div>
+            ) : myBookings.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '40px', color: 'var(--muted)' }}>
+                <Calendar size={40} style={{ marginBottom: '15px', opacity: 0.5 }} />
+                <p>Aún no tienes citas agendadas.</p>
+              </div>
+            ) : myBookings.map((booking) => (
+              <div key={booking.id} className="glass-card" style={{ padding: '20px', borderRadius: '20px', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
                   <span style={{ 
-                    background: item === 1 ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 255, 255, 0.05)', 
-                    color: item === 1 ? '#4CAF50' : 'var(--muted)',
+                    background: booking.status === 'confirmed' ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 152, 0, 0.1)', 
+                    color: booking.status === 'confirmed' ? '#4CAF50' : '#FF9800',
                     padding: '4px 10px',
                     borderRadius: '20px',
                     fontSize: '11px',
                     fontWeight: 'bold',
                     textTransform: 'uppercase'
                   }}>
-                    {item === 1 ? 'Confirmada' : 'Pendiente'}
+                    {booking.status === 'confirmed' ? 'Confirmada' : 'Pendiente'}
                   </span>
-                  <span style={{ color: 'var(--muted)', fontSize: '12px' }}>#DC-293{item}</span>
+                  <span style={{ color: 'var(--muted)', fontSize: '12px' }}>#{booking.id.slice(0, 6).toUpperCase()}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '15px' }}>
                   <div style={{ width: '50px', height: '50px', background: 'var(--primary)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Calendar color="white" size={24} />
                   </div>
                   <div>
-                    <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>{item === 1 ? 'Marcus Aurelio' : 'Elena Vence'}</h4>
+                    <h4 style={{ margin: 0, color: 'white', fontSize: '16px' }}>{booking.artist}</h4>
                     <p style={{ margin: '4px 0 0 0', color: 'var(--muted)', fontSize: '13px' }}>
-                      {item === 1 ? '24 May 2026' : '15 Jun 2026'} • 10:00 AM
+                      {booking.date} • {booking.time}
                     </p>
                   </div>
                 </div>
@@ -161,8 +200,8 @@ const ProfilePage = () => {
                 </button>
               </div>
               
-              <h2 className="profile-name">{user?.displayName || 'Usuario'}</h2>
-              <p className="profile-membership">{user?.email || 'Miembro Premium'}</p>
+              <h2 className="profile-name">{user?.email === 'admin@diamondcrown.com' ? 'Super Administrador' : (user?.displayName || 'Usuario')}</h2>
+              <p className="profile-membership">{user?.email === 'admin@diamondcrown.com' ? 'Acceso Total • Diamond Crown' : (user?.email || 'Miembro Premium')}</p>
               
               <div className="profile-stats">
                 <div className="stat-item">

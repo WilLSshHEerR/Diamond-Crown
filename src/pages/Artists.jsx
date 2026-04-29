@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Camera, Globe, Mail } from 'lucide-react';
+import { db } from '../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
 const ArtistsPage = () => {
-  const artists = [
-    { name: 'Marcus Aurelio', specialty: 'Black & Grey Realism', bio: 'Maestro del detalle con 15 años de experiencia.' },
-    { name: 'Elena Vence', specialty: 'Fine Line & Floral', bio: 'Especialista en trazos delicados y composición botánica.' },
-  ];
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'artists'));
+        const artistsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setArtists(artistsData);
+      } catch (error) {
+        console.error("Error fetching artists:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArtists();
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          style={{ width: '30px', height: '30px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="artists-page" style={{ padding: '20px' }}>
@@ -18,7 +49,7 @@ const ArtistsPage = () => {
       <div style={{ display: 'grid', gap: '25px' }}>
         {artists.map((artist, index) => (
           <motion.div
-            key={index}
+            key={artist.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.2 }}
@@ -31,7 +62,9 @@ const ArtistsPage = () => {
                 height: '80px', 
                 borderRadius: '50%', 
                 background: 'var(--accent)',
-                border: '2px solid var(--primary)'
+                border: '2px solid var(--primary)',
+                backgroundImage: artist.image ? `url(${artist.image})` : 'none',
+                backgroundSize: 'cover'
               }} />
               <div>
                 <h3 style={{ fontSize: '16px', color: 'var(--primary)' }}>{artist.name}</h3>

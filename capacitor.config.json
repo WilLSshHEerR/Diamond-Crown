@@ -5,7 +5,8 @@
   "plugins": {
     "FirebaseAuthentication": {
       "skipNativeAuth": false,
-      "providers": ["google.com"]
+      "providers": ["google.com"],
+      "googleIdToken": "505923803926-fmd6ns63vf4cn1mdum33b123448dm5j8.apps.googleusercontent.com"
     }
   },
   "server": {

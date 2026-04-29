@@ -1,48 +1,63 @@
 import React from 'react';
 import { ShoppingCart, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { db } from '../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 
-// Asumimos que podemos reutilizar las imágenes genéricas para la demostración
+// Placeholder images for when real images are not yet available in the DB
 import product1 from '../assets/product1.png';
 import product2 from '../assets/product2.png';
-import tattoo1 from '../assets/tattoo1.png';
-import tattoo2 from '../assets/tattoo2.png';
-
-const tattooProducts = [
-  { id: 't1', title: 'Healing Balm', price: '$25.00', image: product1, images: [product1, tattoo1], description: 'Bálsamo curativo especializado para la regeneración rápida de la piel tatuada.' },
-  { id: 't2', title: 'Antibacterial Soap', price: '$15.00', image: product1, images: [product1, tattoo2], description: 'Jabón neutro sin perfume, ideal para mantener la zona del tatuaje limpia.' },
-  { id: 't3', title: 'Premium Ink Set', price: '$85.00', image: product2, images: [product2, tattoo1], description: 'Set de tintas negras intensas de uso profesional.' },
-  { id: 't4', title: 'Tattoo Lotion', price: '$18.00', image: product1, images: [product1, tattoo2], description: 'Loción hidratante para uso diario una vez curado el tatuaje.' }
-];
-
-const piercingProducts = [
-  { id: 'p1', title: 'Saline Spray', price: '$12.00', image: product2, images: [product2, tattoo1], description: 'Spray de solución salina estéril para limpiar perforaciones nuevas.' },
-  { id: 'p2', title: 'Titanium Ring', price: '$35.00', image: product2, images: [product2, tattoo2], description: 'Aro de titanio grado implante, hipoalergénico y seguro.' },
-  { id: 'p3', title: 'Aftercare Swabs', price: '$8.00', image: product1, images: [product1, tattoo1], description: 'Hisopos esterilizados para limpieza precisa de piercings.' },
-  { id: 'p4', title: 'Gold Stud 14k', price: '$120.00', image: product2, images: [product2, tattoo2], description: 'Pieza de oro sólido de 14 quilates, elegante y segura.' }
-];
 
 const ShopPage = ({ onProductClick, onBookAppointment }) => {
+  const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, 'products'));
+        const productsData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setProducts(productsData);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleProductClick = (productData) => {
     if (onProductClick) {
       onProductClick(productData);
     }
   };
 
-  const renderProductGrid = (products) => (
+  const tattooProducts = products.filter(p => p.category === 'tattoos');
+  const piercingProducts = products.filter(p => p.category === 'piercings');
+
+  const renderProductGrid = (items) => (
     <div className="shop-grid">
-      {products.map((prod) => (
+      {items.map((prod) => (
         <div
           key={prod.id}
           className="product-card"
           onClick={() => handleProductClick(prod)}
         >
           <div className="product-image-container">
-            <img src={prod.image} alt={prod.title} className="product-img" />
+            <img 
+              src={prod.image || (prod.category === 'tattoos' ? product1 : product2)} 
+              alt={prod.title} 
+              className="product-img" 
+            />
           </div>
           <div className="product-info">
             <h3 className="product-title">{prod.title}</h3>
-            <p className="product-price">{prod.price}</p>
+            <p className="product-price">${prod.price}</p>
             <button className="add-to-cart-btn" onClick={(e) => { e.stopPropagation(); console.log(`Añadido ${prod.title}`); }}>
               <ShoppingCart size={16} />
               <span>Añadir</span>
@@ -52,6 +67,18 @@ const ShopPage = ({ onProductClick, onBookAppointment }) => {
       ))}
     </div>
   );
+
+  if (loading) {
+    return (
+      <div style={{ height: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          style={{ width: '30px', height: '30px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: 'var(--primary)', borderRadius: '50%' }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="shop-page" style={{ padding: '20px', paddingTop: '10px' }}>

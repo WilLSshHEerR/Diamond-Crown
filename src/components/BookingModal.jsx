@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
 import { X, Calendar, User, MessageSquare, CheckCircle, ChevronRight, ChevronLeft, Clock, Image as ImageIcon, Trash2, Upload } from 'lucide-react';
 import { db } from '../firebase/config';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, serverTimestamp } from 'firebase/firestore';
 
-const BookingModal = ({ isOpen, onClose }) => {
+const BookingModal = ({ isOpen, onClose, user }) => {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [artists, setArtists] = useState([]);
   const [formData, setFormData] = useState({
     artist: '',
     date: '',
@@ -18,15 +21,28 @@ const BookingModal = ({ isOpen, onClose }) => {
     images: []
   });
 
-  const artists = [
-    { id: 1, name: 'Marcus Aurelio', specialty: 'Realismo / Black & Grey' },
-    { id: 2, name: 'Elena Vence', specialty: 'Minimalista / Fine Line' },
-    { id: 3, name: 'Cualquier Artista', specialty: 'Asignación automática' }
-  ];
+  useEffect(() => {
+    if (isOpen) {
+      const fetchArtists = async () => {
+        try {
+          const querySnapshot = await getDocs(collection(db, 'artists'));
+          const artistsData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setArtists(artistsData);
+        } catch (error) {
+          console.error("Error fetching artists:", error);
+        }
+      };
+      fetchArtists();
+    }
+  }, [isOpen]);
+
 
   const timeSlots = ['10:00 AM', '12:00 PM', '02:00 PM', '04:00 PM', '06:00 PM'];
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-  const days = ["D", "L", "M", "M", "J", "V", "S"];
+  const days = ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"];
 
   const handleNext = () => setStep(step + 1);
   const handleBack = () => setStep(step - 1);
@@ -34,14 +50,16 @@ const BookingModal = ({ isOpen, onClose }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // Guardar en Firestore
-      await addDoc(collection(db, "appointments"), {
+      // Guardar en Firestore usando la colección unificada 'bookings'
+      await addDoc(collection(db, "bookings"), {
         artist: formData.artist,
         date: formData.date,
         time: formData.time,
         description: formData.description,
         customerName: formData.name,
         customerPhone: formData.phone,
+        userEmail: user?.email || 'anónimo',
+        userId: user?.uid || 'anónimo',
         status: 'pending',
         createdAt: serverTimestamp()
       });
@@ -69,18 +87,18 @@ const BookingModal = ({ isOpen, onClose }) => {
       calendarDays.push(null);
     }
     for (let i = 1; i <= daysInMonth; i++) {
-      calendarDays.push(new Date(year, month, i));
+      calendarDays.push(new Date(year, month, i, 12, 0, 0));
     }
     return calendarDays;
   };
 
-  const isSameDay = (d1, d2) => {
-    if (!d1 || !d2) return false;
-    const date1 = new Date(d1);
-    const date2 = new Date(d2);
-    return date1.getDate() === date2.getDate() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getFullYear() === date2.getFullYear();
+  const isSameDay = (date, dateString) => {
+    if (!date || !dateString) return false;
+    const y = date.getFullYear();
+    const m = date.getMonth() + 1;
+    const d = date.getDate();
+    const [sY, sM, sD] = dateString.split('-').map(Number);
+    return y === sY && m === sM && d === sD;
   };
 
   const changeMonth = (offset) => {
@@ -91,7 +109,7 @@ const BookingModal = ({ isOpen, onClose }) => {
     switch(step) {
       case 1:
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+          <div style={{ opacity: 1 }}>
             <h3 style={{ marginBottom: '20px', color: 'white' }}>Selecciona tu Artista</h3>
             {artists.map((artist) => (
               <button 
@@ -120,11 +138,11 @@ const BookingModal = ({ isOpen, onClose }) => {
                 <ChevronRight size={18} color="var(--muted)" />
               </button>
             ))}
-          </motion.div>
+          </div>
         );
       case 2:
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+          <div style={{ opacity: 1 }}>
             <h3 style={{ marginBottom: '20px', color: 'white' }}>Fecha y Hora</h3>
             
             {/* Custom Calendar */}
@@ -135,6 +153,7 @@ const BookingModal = ({ isOpen, onClose }) => {
               border: '1px solid rgba(255,255,255,0.08)',
               marginBottom: '20px'
             }}>
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
                 <button onClick={() => changeMonth(-1)} style={{ color: 'white' }}><ChevronLeft size={20} /></button>
                 <span style={{ color: 'white', fontWeight: 'bold', textTransform: 'capitalize' }}>
@@ -144,12 +163,19 @@ const BookingModal = ({ isOpen, onClose }) => {
               </div>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '5px', textAlign: 'center' }}>
-                {days.map(d => <span key={d} style={{ color: 'var(--primary)', fontSize: '12px', fontWeight: 'bold', padding: '5px' }}>{d}</span>)}
+                {days.map((d, i) => <span key={i} style={{ color: 'var(--primary)', fontSize: '12px', fontWeight: 'bold', padding: '5px' }}>{d}</span>)}
                 {generateCalendarDays().map((date, index) => (
                   <button
                     key={index}
                     disabled={!date}
-                    onClick={() => date && setFormData({...formData, date: date.toISOString().split('T')[0]})}
+                    onClick={() => {
+                      if (date) {
+                        const yyyy = date.getFullYear();
+                        const mm = String(date.getMonth() + 1).padStart(2, '0');
+                        const dd = String(date.getDate()).padStart(2, '0');
+                        setFormData({...formData, date: `${yyyy}-${mm}-${dd}`});
+                      }
+                    }}
                     style={{
                       aspectRatio: '1',
                       display: 'flex',
@@ -195,7 +221,7 @@ const BookingModal = ({ isOpen, onClose }) => {
               <button onClick={handleBack} className="glass-card" style={{ padding: '15px', borderRadius: '12px', color: 'white', flex: 1 }}>Atrás</button>
               <button onClick={handleNext} className="gold-button" style={{ flex: 2 }} disabled={!formData.date || !formData.time}>Continuar</button>
             </div>
-          </motion.div>
+          </div>
         );
       case 3:
         const handleImageUpload = (e) => {
@@ -210,7 +236,7 @@ const BookingModal = ({ isOpen, onClose }) => {
         };
 
         return (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+          <div style={{ opacity: 1 }}>
             <h3 style={{ marginBottom: '20px', color: 'white' }}>Detalles y Contacto</h3>
             
             <div style={{ marginBottom: '20px' }}>
@@ -283,14 +309,12 @@ const BookingModal = ({ isOpen, onClose }) => {
                 {loading ? 'Procesando...' : 'Confirmar Cita'}
               </button>
             </div>
-          </motion.div>
+          </div>
         );
       case 4:
         return (
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }} 
-            animate={{ scale: 1, opacity: 1 }} 
-            style={{ textAlign: 'center', padding: '40px 20px' }}
+          <div 
+            style={{ textAlign: 'center', padding: '40px 20px', opacity: 1 }}
           >
             <CheckCircle size={80} color="#4CAF50" style={{ marginBottom: '20px' }} />
             <h2 style={{ color: 'white', marginBottom: '10px' }}>¡Solicitud Enviada!</h2>
@@ -305,7 +329,7 @@ const BookingModal = ({ isOpen, onClose }) => {
             >
               Cerrar
             </button>
-          </motion.div>
+          </div>
         );
       default: return null;
     }

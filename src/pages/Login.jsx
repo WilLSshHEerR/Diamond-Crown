@@ -6,6 +6,8 @@ import {
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
   updateProfile,
+  signInWithCredential,
+  GoogleAuthProvider
 } from 'firebase/auth';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
 import logo from '../assets/Logo_diamond.png';
@@ -24,8 +26,12 @@ const LoginPage = ({ onLoginSuccess }) => {
     try {
       // Usar el plugin nativo de Capacitor
       const result = await FirebaseAuthentication.signInWithGoogle();
-      if (result.user) {
-        onLoginSuccess();
+      
+      if (result.credential) {
+        // Vincular la credencial nativa con el SDK de JS de Firebase
+        const credential = GoogleAuthProvider.credential(result.credential.idToken);
+        await signInWithCredential(auth, credential);
+        // El onAuthStateChanged en App.jsx detectará el cambio automáticamente
       }
     } catch (err) {
       console.error(err);

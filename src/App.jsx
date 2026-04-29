@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home as HomeIcon, ShoppingCart, User } from 'lucide-react';
+import { Home as HomeIcon, ShoppingCart, User, Settings } from 'lucide-react';
 import HomePage from './pages/Home';
 import ShopPage from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -12,6 +12,7 @@ import BookingModal from './components/BookingModal';
 import { auth } from './firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import LoginPage from './pages/Login';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -41,6 +42,9 @@ function App() {
     { id: 'profile', icon: User, label: 'Perfil' },
   ];
 
+  // Identificar si el usuario es superadmin (Cuenta única especial)
+  const isAdmin = user?.email === 'admin@diamondcrown.com';
+
   const handleNavClick = (id) => {
     if (id === 'booking') {
       setIsBookingOpen(true);
@@ -65,6 +69,12 @@ function App() {
     return <LoginPage onLoginSuccess={() => {}} />;
   }
 
+  // Si es ADMIN, renderizamos un layout COMPLETAMENTE diferente (sin barra de navegación inferior)
+  if (isAdmin) {
+    return <AdminDashboard />;
+  }
+
+  // Layout para usuarios NORMALES
   return (
     <div className="app-container">
       <NotificationsModal 
@@ -74,6 +84,7 @@ function App() {
       <BookingModal 
         isOpen={isBookingOpen} 
         onClose={() => setIsBookingOpen(false)} 
+        user={user}
       />
       <Header onNotificationsClick={() => setIsNotificationsOpen(true)} />
       <div className="content-scroll">
